@@ -25,24 +25,37 @@ int main()
     int amtToProduce = 10;
 
     // TODO: consume beim Aufruf reduziert resources nicht. Lambda Notation muss verändert werden.
-    auto consume = [resources]() mutable {
+    auto consume = [&resources]() mutable { // mutable ist durch die Referenz redondant geworden und kann entfernt werden
         resources--;
     };
 
+    //consume();
+    //std::cout << resources << std::endl;
+
+
+
     // TODO: produce beim Aufruf erhöht resources nicht. Lambda Notation muss verändert werden.
-    auto produce = [=]() mutable {
+    auto produce = [&]() mutable { // mutable ist durch die Referenz redondant geworden und kann entfernt werden
         resources += amtToProduce;
     };
 
+    //produce();
+    //std::cout << resources << std::endl;
+
+
     // TODO: Zeigt es die richtigen resources an? Irgendwie bleibt der Wert doch bei 1000.
     // Herausfinden, was hier nicht stimmt.
-    auto display = [resources]() {
-        cout << "Resources left: " << resources << endl;
+    auto display = [&resources]()  {
+        std::cout << "Resources left: " << resources << std::endl;
+    };
+    auto display_2 = []( int &resources)  {
+        cout << "In display_2 Resources left: " << resources << endl;
     };
 
     consume();
     produce();
     display();
+    display_2(resources);
 
     bool dispUpper = true;
 
@@ -50,30 +63,21 @@ int main()
 
     // TODO: Folgende Zeilen Code wiederholen sich sehr oft.
     // Finden Sie einen Weg die gleiche Logik beizubehalten, aber folgenden Code mit Hilfe eines Lambdas zu reduzieren.
-    if(dispUpper)
-    {
-        for(int i=0 ; i<text.size() ; i++)
-            displayUpper(text.at(i));
-    }
-    else
-    {
-        for(int i=0 ; i<text.size() ; i++)
-            displayNormal(text.at(i));
-    }
 
-    dispUpper = false;
+    auto disUpperLambda = [&text] (const bool &dispUpper_var) -> void {
+                                                                    if(dispUpper_var){
+																    	for(int i=0 ; i<text.size() ; i++)
+																    		displayUpper(text.at(i));
+																    }
+																    else{
+																    	for(int i=0 ; i<text.size() ; i++)
+																    		displayNormal(text.at(i));
+																    }
 
-    if(dispUpper)
-    {
-        for(int i=0 ; i<text.size() ; i++)
-            displayUpper(text.at(i));
-    }
-    else
-    {
-        for(int i=0 ; i<text.size() ; i++)
-            displayNormal(text.at(i));
-    }
+    };
 
+    disUpperLambda(true);
+    disUpperLambda(false);
 
 
     return 0;
