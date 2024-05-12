@@ -50,9 +50,9 @@ int main()
         std::cout << "c = " << c << std::endl;
     }
 
-    return 0;
+   // return 0;
 
-    // Deadlock
+    // Deadlock : Programm endet nie, weil die beide Threads sich gegenseitig blokieren
     {
     std::mutex m1, m2;
 
@@ -78,6 +78,8 @@ int main()
     t1.join();
     t2.join();
     }
+
+    std::cout << "Ende" <<std::endl;
 
     return 0;
 }
