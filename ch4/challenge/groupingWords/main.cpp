@@ -5,7 +5,7 @@
 
 #include <algorithm> // for std::find
 
-
+#define with_set 0 // o-> with std::map. 1 -> with std::set
 
 #define NO_OF_CHARS 256
  
@@ -49,18 +49,14 @@ int main()
     // Ergebnis soll ungefähr so aussehen: { {"bat"}, {"nat","tan"}, {"ate","eat","tea"} }
 
 
+#if(with_set == 0)
     std::map< int, std::vector<std::string> > anagrammGroups{};
-    //std::set< std::vector<std::string> > anagrammGroups{};
-
     unsigned int id_of_group{0}; // wird als Key für anagrammGroups verwendet
     std::size_t strs_len {strs.size()};
     std::vector<std::size_t> index_worked{};// enthählt Index von String, die schon in anagrammGroups hinzugefügt wurden
 
-
-    //std::map< std::string, int > str_map{};
-
-    for(std::size_t i{0}; i<strs_len - 1 ; i++ ){
-        if(std::find(index_worked.begin(), index_worked.end(), i) != index_worked.end()){ //string an der Stelle i in Vector wurde schon abgearbeitet
+    for(std::size_t i{0}; i<strs_len ; i++ ){
+        if(std::find(index_worked.begin(), index_worked.end(), i) != index_worked.end()){ //string an der Stelle i in Vector wurde schon zu einer angram groupe hinzugefügt. Keine Weitere Bearbeitung des gleichen Strings
             continue;
         }
         else{
@@ -71,31 +67,68 @@ int main()
         }
 
         for(std::size_t j{i+1}; j<strs_len; j++){
-            if(std::find(index_worked.begin(), index_worked.end(), j) != index_worked.end()){ //string an der Stelle i in Vector wurde schon abgearbeitet
+            if(std::find(index_worked.begin(), index_worked.end(), j) != index_worked.end()){ //string an der Stelle i in Vector wurde schon zu einer angram groupe hinzugefügt. Keine Weitere Bearbeitung des gleichen Strings
                 continue;
             }
             else{
                 if( areAnagram(strs.at(i).data(), strs.at(j).data()) ){
-                    anagrammGroups[id_of_group].push_back(strs.at(j)); // das key id_of_group ist die anagram Gruppe, die gerade ausgefüllt ist
+                    anagrammGroups[id_of_group].push_back(strs.at(j)); // das key id_of_group ist die anagram-Gruppe, die gerade ausgefüllt ist
                     index_worked.push_back(j);
                 }
             }
         }     
     }
-    
 
-
-
-    
     for( const auto &group : anagrammGroups ){
-
         std::cout << "Group " << group.first << ":" << std::endl;
-        for( const auto &word : group.second )
-        {
+        for( const auto &word : group.second ){
             std::cout << word << " ";
         }
         std::cout << std::endl;
     }
+
+#elif(with_set == 1)
+    std::set< std::vector<std::string> > anagrammGroups{};
+    std::size_t strs_len {strs.size()};
+    std::vector<std::size_t> index_worked{};// enthählt Index von String, die schon in anagrammGroups hinzugefügt wurden
+    std::vector<std::string> one_group{};
+
+    for(std::size_t i{0}; i<strs_len ; i++ ){
+        if(std::find(index_worked.begin(), index_worked.end(), i) != index_worked.end()){ //string an der Stelle i in Vector wurde schon zu einer angram groupe hinzugefügt. Keine Weitere Bearbeitung des gleichen Strings
+            continue;
+        }
+        else{
+            one_group.push_back(strs.at(i));
+        }
+
+        for(std::size_t j{i+1}; j<strs_len; j++){
+            if(std::find(index_worked.begin(), index_worked.end(), j) != index_worked.end()){ //string an der Stelle i in Vector wurde schon zu einer angram groupe hinzugefügt. Keine Weitere Bearbeitung des gleichen Strings
+                continue;
+            }
+            else{
+                if( areAnagram(strs.at(i).data(), strs.at(j).data()) ){
+                    one_group.push_back(strs.at(j));
+                    index_worked.push_back(j);
+                }
+            }
+        } 
+        anagrammGroups.insert(one_group);
+        one_group.clear();       
+    }
+
+    int i{1};
+    for( const auto &group : anagrammGroups ){
+        std::cout << "Group " << i++ << ":" << std::endl;
+        for( const auto &word : group ){
+            std::cout << word << " ";
+        }
+        std::cout << std::endl;
+    }
+ #endif   
+
+    
+    
+
 
     return 0;
 }
