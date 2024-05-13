@@ -46,18 +46,19 @@ int doSomething()
         {
             throw "Error opening file";
         }
+        std::cout << "Beginn ProcessFile" << std::endl;
         processFile();
     }
-    catch (exception &ex)
-    {
+    catch (exception &ex){
+        std::cout << "throw ex.what()" << std::endl;
         throw ex.what();
     }
-    catch (const bool value)
-    {
+    catch (const bool value){
+        std::cout << "throw -1" << std::endl;
         throw -1;
     }
-    catch (const char* msg)
-    {
+    catch (const char* msg){
+        std::cout << "throw msg" << std::endl;
         throw msg;
     }
 
